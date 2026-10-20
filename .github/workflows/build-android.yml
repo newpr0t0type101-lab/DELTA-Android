@@ -20,8 +20,11 @@ jobs:
           java-version: '17'
       - name: Install Android SDK 35
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          test -n "$SDKMANAGER" || { echo "sdkmanager not found"; exit 1; }
+          echo "Using $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" --install "platforms;android-35" "build-tools;35.0.0"
       - name: Set up Gradle 8.10.2
         uses: gradle/actions/setup-gradle@v4
         with:
